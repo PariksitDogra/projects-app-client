@@ -1,0 +1,20 @@
+.Projects form {
+    padding-bottom: 15px;
+  }
+  
+.Projects form textarea {
+    height: 300px;
+    font-size: 24px;
+}
+.Projects select{
+    margin-bottom: 15px;
+}
+.Projects .LoaderButton{
+    margin-top: 15px;
+    background-color: #90A4AE;
+    border: black;
+}
+.Projects .LoaderButton:hover{
+    background-color: #BA68C8;
+}
+textarea {resize: none;}
