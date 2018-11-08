@@ -48,7 +48,7 @@ export default class NewProject extends Component {
       await this.createProject({
         title: this.state.projectTitle,
         projectStatus: this.state.projectStatus.value,
-        mgmtId: "mgmt@email.com",
+        mgmtId: this.props.getEmailId(),
         content: this.state.content
       });
       this.props.history.push("/");

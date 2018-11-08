@@ -13,12 +13,13 @@ class App extends Component {
     this.state = {
       isAuthenticated: false,
       isAuthenticating: true,
-      userId: ""
+      userId: "None"
     };
   }
   async componentDidMount() {
     try {
       await Auth.currentSession();
+      await Auth.currentUserPoolUser().then(value => Auth.userAttributes(value).then(value => this.setEmailId(value[2].Value)))
       this.userHasAuthenticated(true);
     }
     catch(e) {
@@ -30,21 +31,33 @@ class App extends Component {
     this.setState({ isAuthenticating: false });
   }
   
-  userHasAuthenticated = (authenticated, emailId) => {
+  userHasAuthenticated = (authenticated) => {
     this.setState({ isAuthenticated: authenticated });
-    this.setState({ userId: emailId });
   }
   
+  getEmailId = event => {
+    return this.state.userId;
+    
+  }
+
+  setEmailId = (email) => {
+    this.setState({userId: email})
+  }
+
   handleLogout = async event => {
     await Auth.signOut();
   
-    this.userHasAuthenticated(false, "");
+    this.userHasAuthenticated(false);
     this.props.history.push("/login");
   }
   render() {
     const childProps = {
       isAuthenticated: this.state.isAuthenticated,
-      userHasAuthenticated: this.userHasAuthenticated
+      userHasAuthenticated: this.userHasAuthenticated,
+      setEmailId: this.setEmailId,
+      getEmailId: this.getEmailId
+      
+
     };
   
     return (
