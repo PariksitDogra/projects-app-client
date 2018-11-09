@@ -6,7 +6,7 @@ import {
   ControlLabel
 } from "react-bootstrap";
 import LoaderButton from "../components/LoaderButton";
-import { Auth } from "aws-amplify";
+import { Auth, API } from "aws-amplify";
 import "./Signup.css";
 
 export default class Signup extends Component {
@@ -61,6 +61,12 @@ export default class Signup extends Component {
     this.setState({ isLoading: false });
   }
   
+  createUser(user){
+    return API.post("projectAPI", "/users",{
+        body: user
+    })
+  }
+
   handleConfirmationSubmit = async event => {
     event.preventDefault();
   
@@ -69,7 +75,11 @@ export default class Signup extends Component {
     try {
       await Auth.confirmSignUp(this.state.email, this.state.confirmationCode);
       await Auth.signIn(this.state.email, this.state.password);
-  
+      this.createUser({
+        content: "davai davai",
+        permRole:"developer",
+        emailId: this.state.email,
+      })
       this.props.userHasAuthenticated(true, this.state.email);
       this.props.history.push("/");
     } catch (e) {

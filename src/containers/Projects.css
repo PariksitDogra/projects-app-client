@@ -17,4 +17,10 @@
 .Projects .LoaderButton:hover{
     background-color: #BA68C8;
 }
+.Projects .devTable{
+    
+}
+.Projects .statusTable{
+    
+}
 textarea {resize: none;}
