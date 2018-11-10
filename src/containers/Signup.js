@@ -76,11 +76,11 @@ export default class Signup extends Component {
       await Auth.confirmSignUp(this.state.email, this.state.confirmationCode);
       await Auth.signIn(this.state.email, this.state.password);
       this.createUser({
-        content: "davai davai",
+        content: "No Content",
         permRole:"developer",
         emailId: this.state.email,
       })
-      this.props.userHasAuthenticated(true, this.state.email);
+      this.props.userHasAuthenticated(true);
       this.props.history.push("/");
     } catch (e) {
       alert(e.message);
@@ -103,6 +103,7 @@ export default class Signup extends Component {
         </FormGroup>
         <LoaderButton
           block
+          className="signBtn"
           bsSize="large"
           disabled={!this.validateConfirmationForm()}
           type="submit"
@@ -144,6 +145,7 @@ export default class Signup extends Component {
         </FormGroup>
         <LoaderButton
           block
+          className="signBtn"
           bsSize="large"
           disabled={!this.validateForm()}
           type="submit"

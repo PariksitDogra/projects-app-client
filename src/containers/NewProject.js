@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 import LoaderButton from "../components/LoaderButton";
-import config from "../config";
 import "./NewProject.css";
 import 'react-dropdown/style.css'
 import Select from 'react-select';
@@ -18,6 +17,9 @@ const options = [
 export default class NewProject extends Component {
   constructor(props) {
     super(props);
+    if(!(this.props.getPermRole()==="admin" || this.props.getPermRole() === "project manager")){
+      this.props.history.push("/");
+    }
     this.state = {
       isLoading: null,
       projectTitle: "",

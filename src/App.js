@@ -3,8 +3,9 @@ import { Link, withRouter } from "react-router-dom";
 import { Nav, Navbar, NavItem } from "react-bootstrap";
 import "./App.css";
 import Routes from "./Routes";
-import { Auth } from "aws-amplify";
+import { Auth, API } from "aws-amplify";
 import { LinkContainer } from "react-router-bootstrap";
+import { CognitoIdentity } from "aws-sdk/clients/all";
 
 class App extends Component {
   constructor(props) {
@@ -13,13 +14,19 @@ class App extends Component {
     this.state = {
       isAuthenticated: false,
       isAuthenticating: true,
-      userId: "None"
+      userId: "None",
+      permRole: "developer",
+      trueId:""
     };
   }
   async componentDidMount() {
     try {
       await Auth.currentSession();
       await Auth.currentUserPoolUser().then(value => Auth.userAttributes(value).then(value => this.setEmailId(value[2].Value)))
+      await API.get("projectAPI", "/users").then(value => this.setPermRole(value));
+      await this.getCurrentUser().then(value => this.setState({trueId: value.userId}))
+
+      Promise.resolve()
       this.userHasAuthenticated(true);
     }
     catch (e) {
@@ -37,7 +44,20 @@ class App extends Component {
 
   getEmailId = event => {
     return this.state.userId;
+  }
 
+  setPermRole = (user) =>{
+    this.setState({permRole: user.permRole})
+  }
+  setTrueId = (user) =>{
+    this.setState({trueId: user.userId})
+  }
+
+  getPermRole = event => {
+    return this.state.permRole
+  }
+  getCurrentUser = event => {
+    return API.get("projectAPI", "/users")
   }
 
   setEmailId = (email) => {
@@ -50,13 +70,19 @@ class App extends Component {
     this.userHasAuthenticated(false);
     this.props.history.push("/login");
   }
+
+  
+
   render() {
     const childProps = {
       isAuthenticated: this.state.isAuthenticated,
       userHasAuthenticated: this.userHasAuthenticated,
       setEmailId: this.setEmailId,
-      getEmailId: this.getEmailId
-
+      getEmailId: this.getEmailId,
+      getPermRole: this.getPermRole,
+      setPermRole: this.setPermRole,
+      getCurrentUser: this.getCurrentUser,
+      setTrueId: this.setTrueId
 
     };
 
@@ -65,7 +91,7 @@ class App extends Component {
       <div className="App container">
         <Navbar fluid collapseOnSelect>
           <Navbar.Header>
-            <Navbar.Brand>
+            <Navbar.Brand className ="homeButton">
               <Link to="/">SpiffyCloud</Link>
             </Navbar.Brand>
             <Navbar.Toggle />
@@ -75,16 +101,20 @@ class App extends Component {
               {this.state.isAuthenticated
                 ? <Fragment>
                   <LinkContainer to="/users">
-                    <NavItem>Users</NavItem>
+                    <NavItem className="helpMe" >Users</NavItem>
                   </LinkContainer>
-                  <NavItem onClick={this.handleLogout}>Logout</NavItem>
+                  <LinkContainer to={`/users/${this.state.trueId}`}>
+                    <NavItem className="helpMe">Edit Profile
+                    </NavItem>
+                  </LinkContainer>
+                  <NavItem className="helpMe" onClick={this.handleLogout}>Logout</NavItem>
                 </Fragment>
                 : <Fragment>
                   <LinkContainer to="/signup">
-                    <NavItem>Signup</NavItem>
+                    <NavItem className="helpMe" >Signup</NavItem>
                   </LinkContainer>
                   <LinkContainer to="/login">
-                    <NavItem>Login</NavItem>
+                    <NavItem className="helpMe">Login</NavItem>
                   </LinkContainer>
                 </Fragment>
               }

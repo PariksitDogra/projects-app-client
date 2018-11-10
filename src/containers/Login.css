@@ -8,3 +8,11 @@
       max-width: 320px;
     }
   }
+
+.loginBtn{
+  background-color:#80CBC4;
+  color:black;
+}
+.loginBtn:hover{
+  background-color:#4DB6AC;
+}

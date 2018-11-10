@@ -5,3 +5,10 @@
 .App .navbar-brand {
   font-weight: bold;
 }
+
+.App .navbar-brand:hover {
+  color: #4DB6AC;
+}
+.App .navbar-nav> .helpMe:hover{
+  background-color: #80CBC4;
+}

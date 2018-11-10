@@ -4,8 +4,7 @@ import { FormGroup, FormControl, ControlLabel, ListGroupItem } from "react-boots
 import LoaderButton from "../components/LoaderButton";
 import "./Projects.css";
 import Select from 'react-select';
-import { LinkContainer } from "react-router-bootstrap";
-import { EEXIST } from "constants";
+
 
 const statusOptions = [
   { value: 'Pending', label: 'Pending' },
@@ -28,8 +27,7 @@ export default class Projects extends Component {
       developers: [],
       projectStatus: "",
       dropDownOptions: null,
-      currentOption: { value: "null", label: "null" },
-      availableUsers: ["dummy"]
+      availableUsers: []
     };
   }
   getUsers() {
@@ -56,25 +54,23 @@ export default class Projects extends Component {
 
       });
       this.setState({ dropDownOptions: { value: this.state.projectStatus, label: this.state.projectStatus } })
-      
+
     } catch (e) {
       alert(e);
     }
   }
-  
 
-  getEmailIds= (users, developers) => {
+
+  getEmailIds = (users, developers) => {
     var availableUsers = []
-
-    for (var i = 0; i < users.length; i++){
+    for (var i = 0; i < users.length; i++) {
       availableUsers.push(users[i].emailId);
-      for(var x = 0; x < developers.length;x++){
-        if(users[i].emailId===developers[x]){
+      for (var x = 0; x < developers.length; x++) {
+        if (users[i].emailId === developers[x]) {
           availableUsers.pop();
           break;
         }
       }
-      
     }
     return availableUsers;
   }
@@ -110,7 +106,7 @@ export default class Projects extends Component {
         content: this.state.content,
         title: this.state.title,
         developers: this.state.developers,
-        projectStatus: this.state.projectStatus.value
+        projectStatus: this.state.projectStatus
 
       });
       this.props.history.push("/");
@@ -149,12 +145,8 @@ export default class Projects extends Component {
 
   dropdownOnChange = (dropDownOptions) => {
     this.setState({ dropDownOptions });
-    this.setState({ projectStatus: dropDownOptions })
+    this.setState({ projectStatus: dropDownOptions.value })
 
-  }
-
-  dropdownDev = (currentOption) => {
-    this.setState({ currentOption });
   }
 
   removeDeveloper = event => {
@@ -168,7 +160,7 @@ export default class Projects extends Component {
         users.push(developer);
       }
     this.setState({ developers })
-    this.setState({availableUsers: users})
+    this.setState({ availableUsers: users })
 
   }
 
@@ -178,98 +170,140 @@ export default class Projects extends Component {
     var developers = this.state.developers;
     var users = this.state.availableUsers;
     for (var i = 0; i < users.length; i++)
-      if(users[i] === user) {
+      if (users[i] === user) {
         users.splice(i, 1);
         developers.push(user)
       }
     this.setState({ developers })
-    this.setState({availableUsers: users})
+    this.setState({ availableUsers: users })
+  }
+  boolCheck() {
+    if (!(this.props.getPermRole() === "admin" || this.state.mgmtId === this.props.getEmailId())) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
-
-render() {
-  return (
-    <div className="Projects">
-      {this.state.project &&
-        <form onSubmit={this.handleSubmit}>
-          <FormGroup controlId="title" bsSize="large">
-            <ControlLabel>Project Title</ControlLabel>
-            <FormControl
-              type="Title"
-              onChange={this.handleChange}
-              value={this.state.title}
-            />
-          </FormGroup>
-          <ControlLabel>Project Description</ControlLabel>
-          <FormGroup controlId="content">
-            <FormControl
-              onChange={this.handleChange}
-              value={this.state.content}
-              componentClass="textarea"
-              style={{ height: 300 }}
-            />
-          </FormGroup>
-          <ControlLabel>Project Status </ControlLabel>
-          <Select
-            className="statusTable"
-            value={this.state.dropDownOptions}
-            onChange={this.dropdownOnChange}
-            options={statusOptions}
-          />
-          <p></p>
-          <ControlLabel>Project Developers </ControlLabel>
-          <select id="devList" name="devList">
-            {this.state.developers.map((e) => {
-              return <option key={e} value={e}>{e}</option>;
-            })}
-          </select>
-          <p></p>
-          <ControlLabel>Available Developers </ControlLabel>
-          <select id="userList" name="userList">
-            {this.state.availableUsers.map((e) => {
-              return <option key={e} value={e}>{e}</option>;
-            })}
-          </select>
-          <LoaderButton
-            
-            type="button"
-            onClick={this.addDeveloper}
-            text="Add a developer"
-            bsStyle="primary"
-            isLoading={this.state.isLoading}
-            loadingText="Adding developer..."
-          ></LoaderButton>
-          <LoaderButton
-            block
-            type="button"
-            onClick={this.removeDeveloper}
-            text="Remove developer"
-            bsStyle="primary"
-            isLoading={this.state.isLoading}
-            loadingText="Removing developer..."
-          ></LoaderButton>
-          <LoaderButton
-            block
-            bsStyle="primary"
-            bsSize="large"
-            disabled={!this.validateForm()}
-            type="submit"
-            isLoading={this.state.isLoading}
-            text="Save"
-            loadingText="Saving…"
-          />
-          <LoaderButton
-            block
-            bsStyle="danger"
-            bsSize="large"
-            isLoading={this.state.isDeleting}
-            onClick={this.handleDelete}
-            text="Delete"
-            loadingText="Deleting…"
-          />
-        </form>}
-    </div>
-  );
-}
+  showStatus() {
+    if(!(this.props.getPermRole() === "admin" || this.state.mgmtId === this.props.getEmailId())) {
+      return <FormGroup controlId="projectStatus" bsSize="large">
+              <ControlLabel>Project Status</ControlLabel>
+              <FormControl
+                type="Status"
+                value={this.state.projectStatus}
+                disabled={this.boolCheck()}
+              />
+            </FormGroup>
+    
+    }else{
+      return <Select
+      className="statusTable"
+      value={this.state.dropDownOptions}
+      onChange={this.dropdownOnChange}
+      options={statusOptions}
+    />
+    }
   
+  }
+
+  showDevelopers(){
+    if(!(this.props.getPermRole() === "admin" || this.state.mgmtId === this.props.getEmailId())) {
+      return(<div><ControlLabel>Project Developers</ControlLabel>
+            <select id="devList" name="devList">
+              {this.state.developers.map((e) => {
+                return <option key={e} value={e}>{e}</option>;
+              })}
+      </select></div>);
+    }else{
+      return (<div>
+        <ControlLabel>Project Developers </ControlLabel>
+            <p></p>
+            <select id="devList" name="devList">
+              {this.state.developers.map((e) => {
+                return <option key={e} value={e}>{e}</option>;
+              })}
+            </select>
+            <LoaderButton
+              className="addDev"
+              type="button"
+              onClick={this.addDeveloper}
+              text="Add a developer"
+              bsStyle="primary"
+              isLoading={this.state.isLoading}
+            ></LoaderButton>
+            <p></p>
+            <ControlLabel>Available Developers </ControlLabel>
+            <p></p>
+            <select id="userList" name="userList">
+              {this.state.availableUsers.map((e) => {
+                return <option key={e} value={e}>{e}</option>;
+              })}
+            </select>
+            <LoaderButton
+              className="removeDev"
+              type="button"
+              onClick={this.removeDeveloper}
+              text="Remove developer"
+              bsStyle="primary"
+              isLoading={this.state.isLoading}
+              
+            ></LoaderButton>
+            <p></p>
+            
+            <LoaderButton
+              block
+              bsStyle="primary"
+              bsSize="large"
+              disabled={!this.validateForm()}
+              type="submit"
+              isLoading={this.state.isLoading}
+              text="Save"
+              loadingText="Saving…"
+            />
+            <LoaderButton
+              block
+              bsStyle="danger"
+              bsSize="large"
+              isLoading={this.state.isDeleting}
+              onClick={this.handleDelete}
+              text="Delete"
+              loadingText="Deleting…"
+            />
+      </div>)
+    }
+  }
+
+  render() {
+    return (
+      <div className="Projects">
+        {this.state.project &&
+          <form onSubmit={this.handleSubmit}>
+            <FormGroup controlId="title" bsSize="large">
+              <ControlLabel>Project Title</ControlLabel>
+              <FormControl
+                type="Title"
+                onChange={this.handleChange}
+                value={this.state.title}
+                disabled={this.boolCheck()}
+              />
+            </FormGroup>
+            <ControlLabel>Project Description</ControlLabel>
+            <FormGroup controlId="content">
+              <FormControl
+                onChange={this.handleChange}
+                value={this.state.content}
+                componentClass="textarea"
+                style={{ height: 300 }}
+                disabled={this.boolCheck()}
+              />
+            </FormGroup>
+            <div>{this.showStatus()}</div>
+            <p></p>
+            <div>{this.showDevelopers()}</div>
+            </form>}
+      </div>
+    );
+  }
+
 }

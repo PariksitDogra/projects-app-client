@@ -8,19 +8,32 @@
 }
 .Projects select{
     margin-bottom: 15px;
+    
 }
+.Projects select:active, select:hover {
+    outline-color: #00695C
+  }
 .Projects .LoaderButton{
-    margin-top: 15px;
-    background-color: #90A4AE;
+    
+    background-color: #26A69A;
     border: black;
+
+}
+.Projects .addDev{
+    background-color:#26A69A;
+    margin-left:15px;
+}
+
+.Projects .removeDev{
+    background-color: #26A69A;
+    border: black;
+    margin-left:15px;
+
+
 }
 .Projects .LoaderButton:hover{
-    background-color: #BA68C8;
+    background-color: #00695C;
 }
-.Projects .devTable{
-    
-}
-.Projects .statusTable{
-    
-}
+
+
 textarea {resize: none;}

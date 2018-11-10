@@ -1,0 +1,21 @@
+.ViewUser form {
+    padding-bottom: 15px;
+  }
+  
+.ViewUser form textarea {
+    height: 300px;
+    font-size: 24px;
+  }
+.ViewUser .viewUser{
+  margin-top:15px;
+  background-color:#26A69A;
+  border-color:#26A69A;
+
+}
+.ViewUser .viewUser:hover{
+  background-color: #00695C;
+
+}
+
+
+ textarea {resize: none;}

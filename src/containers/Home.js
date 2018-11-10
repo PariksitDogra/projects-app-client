@@ -3,6 +3,7 @@ import { PageHeader, ListGroup, ListGroupItem } from "react-bootstrap";
 import "./Home.css";
 import { API } from "aws-amplify";
 import { LinkContainer } from "react-router-bootstrap";
+
 export default class Home extends Component {
   constructor(props) {
     super(props);
@@ -17,8 +18,8 @@ export default class Home extends Component {
     if (!this.props.isAuthenticated) {
       return;
     }
-    
     try {
+      await API.get("projectAPI", "/users").then(value => this.props.setPermRole(value))
       const projects = await this.projects({
         userId: this.props.getEmailId()
       });
@@ -32,10 +33,34 @@ export default class Home extends Component {
   }
   
   projects(user) {
-    return API.post("projectAPI", "/projects/plist", {
-      body: user
-    });
+   
+    if(this.props.getPermRole()==="admin"){
+      
+      return API.post("projectAPI", "/projects/pall",{
+        body: user
+      });
+    }else{
+      return API.post("projectAPI", "/projects/plist", {
+        body: user
+      });
+    }
+  }
+
+  checkRole(){
     
+    if(this.props.getPermRole() === "admin" || this.props.getPermRole()==="project manager"){
+      return(
+            <LinkContainer
+              key="new"
+              to="/projects/new"
+            >
+              <ListGroupItem className="newProj">
+                <h4>
+                  <b>{"\uFF0B"}</b> Create a new project
+                </h4>
+              </ListGroupItem>
+            </LinkContainer>
+      )}
   }
 
   renderProjectsList(projects) {
@@ -46,20 +71,12 @@ export default class Home extends Component {
               key={project.projectId}
               to={`/projects/${project.projectId}`}
             >
-              <ListGroupItem header={project.content.trim().split("\n")[0]}>
+              <ListGroupItem className="projs" header={project.title}>
                 {"Created: " + new Date(project.createdAt).toLocaleString() + " by " + project.mgmtId}
               </ListGroupItem>
             </LinkContainer>
-          : <LinkContainer
-              key="new"
-              to="/projects/new"
-            >
-              <ListGroupItem>
-                <h4>
-                  <b>{"\uFF0B"}</b> Create a new project
-                </h4>
-              </ListGroupItem>
-            </LinkContainer>
+          : <div>{this.checkRole()}</div>
+            
     );
   }
 

@@ -23,7 +23,6 @@ export default class Home extends Component {
       const users = await this.users();
      
       this.setState({ users });
-      console.log(users)
     } catch (e) {
       alert(e);
     }
